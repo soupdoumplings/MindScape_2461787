@@ -38,3 +38,9 @@
 - Request transitions with `GameManager.Instance.LoadScene("SceneName")`. The call returns `false` and logs an error if the name is empty, missing from Build Settings, or another transition is in progress.
 - A successful request uses a single-mode async load. Subscribe to `SceneLoadStarted`, `SceneLoadCompleted`, or `SceneLoadFailed` when another system needs to respond to a transition.
 - `startupScene` currently defaults to `SampleGameplay`. Any future startup or destination scene must be enabled in Build Settings and use its exact scene name.
+
+## Player input
+
+- `InputSystem_Actions` is the one place that lists the game's controls. Do not add new keyboard checks directly in gameplay scripts.
+- `PF_Player` is the player prefab used by the sample scenes. It uses `InputSystem_Actions`.
+- Move with WASD or the arrow keys. Look with the mouse or the right gamepad stick. Jump with Space or the gamepad south button. Sprint with Left Shift or the left-stick button.

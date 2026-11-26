@@ -552,7 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6e7f8091029384756a1b2c3d4e5f607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstPersonPlayerPrefab: {fileID: 8616685848737228372, guid: c5efc39a8aaf6e64ea40e9ad573e9b47, type: 3}
+  firstPersonPlayerPrefab: {fileID: 100100000, guid: 58cbd2d24f9d41a1b3d98f7e2c6aa541, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
