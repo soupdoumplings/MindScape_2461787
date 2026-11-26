@@ -50,3 +50,10 @@
 - The menu appears in the top-left corner and stays visible while scenes change.
 - It is made for a 1920 by 1080 screen and scales up or down to fit other screens.
 - Use **Play Gameplay** to open the gameplay scene and **Pathfinding Test** to open the grid test scene.
+
+## Settings
+
+- Open **Settings** in the game menu to change the options.
+- **Volume** changes the game sound level. **Sensitivity** changes how quickly the first-person camera turns.
+- **FPS Cap** switches between 30, 60, and 120 frames per second.
+- Choices are saved on this computer and are used again the next time the game starts.
