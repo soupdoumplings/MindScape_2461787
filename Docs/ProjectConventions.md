@@ -44,3 +44,9 @@
 - `InputSystem_Actions` is the one place that lists the game's controls. Do not add new keyboard checks directly in gameplay scripts.
 - The sample scenes use the working Starter Assets player prefab. Keep it in place until the project input actions are wired to a tested player prefab.
 - Move with WASD or the arrow keys. Look with the mouse or the right gamepad stick. Jump with Space or the gamepad south button. Sprint with Left Shift or the left-stick button.
+
+## Basic menu
+
+- The menu appears in the top-left corner and stays visible while scenes change.
+- It is made for a 1920 by 1080 screen and scales up or down to fit other screens.
+- Use **Play Gameplay** to open the gameplay scene and **Pathfinding Test** to open the grid test scene.
