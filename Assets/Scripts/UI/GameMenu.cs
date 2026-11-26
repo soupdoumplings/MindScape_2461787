@@ -90,9 +90,12 @@ public sealed class GameMenu : MonoBehaviour
     {
         if (settingsText == null || GameSettings.Instance == null) return;
         settingsText.text = "Settings";
-        volumeValue.text = $"{GameSettings.Instance.Volume:0%}";
-        sensitivityValue.text = $"{GameSettings.Instance.Sensitivity:0.00}x";
-        frameRateValue.text = $"{GameSettings.Instance.FrameRate} FPS";
+        if (volumeValue != null)
+            volumeValue.text = $"{GameSettings.Instance.Volume:0%}";
+        if (sensitivityValue != null)
+            sensitivityValue.text = $"{GameSettings.Instance.Sensitivity:0.00}x";
+        if (frameRateValue != null)
+            frameRateValue.text = $"{GameSettings.Instance.FrameRate} FPS";
     }
 
     private Text CreateSlider(string label, Transform parent, Vector2 position, float min, float max, float value, UnityEngine.Events.UnityAction<float> onChanged)
