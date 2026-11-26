@@ -42,5 +42,5 @@
 ## Player input
 
 - `InputSystem_Actions` is the one place that lists the game's controls. Do not add new keyboard checks directly in gameplay scripts.
-- `PF_Player` is the player prefab used by the sample scenes. It uses `InputSystem_Actions`.
+- The sample scenes use the working Starter Assets player prefab. Keep it in place until the project input actions are wired to a tested player prefab.
 - Move with WASD or the arrow keys. Look with the mouse or the right gamepad stick. Jump with Space or the gamepad south button. Sprint with Left Shift or the left-stick button.
