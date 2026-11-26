@@ -27,6 +27,14 @@
 
 ## Current examples
 
+- `Bootstrap.unity` is the first scene in Build Settings. It owns the one persistent `GameManager`.
 - `SamplePathfinding.unity` is the isolated A* and hide-and-seek learning scene.
 - `SampleGameplay.unity` is the gameplay scene.
 - `Grid3D.cs`, `GridNode.cs`, and `AStarPathfinder.cs` follow the script naming convention.
+
+## Runtime scene management
+
+- `GameManager` is the sole persistent scene-management service. It is created in `Bootstrap.unity`; duplicate instances log a warning and are destroyed.
+- Request transitions with `GameManager.Instance.LoadScene("SceneName")`. The call returns `false` and logs an error if the name is empty, missing from Build Settings, or another transition is in progress.
+- A successful request uses a single-mode async load. Subscribe to `SceneLoadStarted`, `SceneLoadCompleted`, or `SceneLoadFailed` when another system needs to respond to a transition.
+- `startupScene` currently defaults to `SampleGameplay`. Any future startup or destination scene must be enabled in Build Settings and use its exact scene name.
