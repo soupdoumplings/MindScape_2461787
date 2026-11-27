@@ -69,7 +69,7 @@ public class AStarPathfinder : MonoBehaviour
 
             foreach (GridNode neighbour in GetNeighbours(current))
             {
-                if (!neighbour.IsWalkable || closedSet.Contains(neighbour))
+                if (!grid.IsWalkable(neighbour.GridPosition) || closedSet.Contains(neighbour))
                     continue;
 
                 int tentativeCost = current.GCost + GetDistance(current, neighbour);
