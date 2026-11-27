@@ -33,6 +33,7 @@ public class Grid3D : MonoBehaviour
 
     public Vector3Int GridSize => new Vector3Int(width, height, depth);
     public float CellSize => cellSize;
+    public int CellCount => width * height * depth;
 
     /// <summary>Updates a node at runtime and refreshes its simple demo visual.</summary>
     public void SetWalkable(Vector3Int position, bool walkable)
@@ -61,6 +62,27 @@ public class Grid3D : MonoBehaviour
             return null;
 
         return grid[position.x, position.y, position.z];
+    }
+
+    /// <summary>Returns the face-sharing neighbours of a cell that are inside this grid.</summary>
+    public List<GridNode> GetNeighbours(Vector3Int position)
+    {
+        List<GridNode> neighbours = new List<GridNode>(6);
+        Vector3Int[] directions =
+        {
+            Vector3Int.left, Vector3Int.right,
+            Vector3Int.down, Vector3Int.up,
+            new Vector3Int(0, 0, -1), new Vector3Int(0, 0, 1)
+        };
+
+        foreach (Vector3Int direction in directions)
+        {
+            GridNode neighbour = GetNode(position + direction);
+            if (neighbour != null)
+                neighbours.Add(neighbour);
+        }
+
+        return neighbours;
     }
 
     public bool IsCellBlocked(Vector3Int position)
@@ -179,8 +201,11 @@ public class Grid3D : MonoBehaviour
                 cube.transform.SetParent(parent.transform, true);
 
                 Renderer renderer = cube.GetComponent<Renderer>();
-
-                renderer.material.color = isBlocked ? Color.red : Color.green;
+                MaterialPropertyBlock properties = new MaterialPropertyBlock();
+                Color color = isBlocked ? Color.red : Color.green;
+                properties.SetColor("_BaseColor", color);
+                properties.SetColor("_Color", color);
+                renderer.SetPropertyBlock(properties);
             }
         }
 

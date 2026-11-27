@@ -57,3 +57,9 @@
 - **Volume** changes the game sound level. **Sensitivity** changes how quickly the first-person camera turns.
 - **FPS Cap** switches between 30, 60, and 120 frames per second.
 - Choices are saved on this computer and are used again the next time the game starts.
+
+## Grid data
+
+- `Grid3D` stores one `GridNode` for every X, Y, Z cell. Each node records its grid position, world position, and whether it can be walked on.
+- Use `GetNode(position)` to look up a cell and `GetNeighbours(position)` to inspect the cells sharing one of its six sides.
+- The current sample scenes are flat grids (`height = 1`), but the data structure supports multiple height levels.
