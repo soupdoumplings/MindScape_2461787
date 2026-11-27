@@ -1,25 +1,11 @@
 using UnityEngine;
 
-[ExecuteAlways]
 [RequireComponent(typeof(Grid3D))]
 public class PhysicsPathfindingDemo : MonoBehaviour
 {
     [SerializeField] private GameObject firstPersonPlayerPrefab;
-    [SerializeField] private bool buildObjectsInEditMode = true;
 
     private const string LevelObjectsName = "Level Objects";
-
-    private void OnEnable()
-    {
-        if (!Application.isPlaying && buildObjectsInEditMode)
-            BuildLevelObjects();
-    }
-
-    private void OnValidate()
-    {
-        if (!Application.isPlaying && buildObjectsInEditMode)
-            BuildLevelObjects();
-    }
 
     private void Start()
     {
@@ -75,7 +61,7 @@ public class PhysicsPathfindingDemo : MonoBehaviour
         float cellSize = grid.CellSize;
         floor.transform.position = transform.position + new Vector3(size.x * cellSize * 0.5f, -0.15f, size.z * cellSize * 0.5f);
         floor.transform.localScale = new Vector3(size.x * cellSize, 0.3f, size.z * cellSize);
-        floor.GetComponent<Renderer>().material.color = new Color(0.16f, 0.18f, 0.22f);
+        SetColor(floor.GetComponent<Renderer>(), new Color(0.16f, 0.18f, 0.22f));
     }
 
     private void CreateObstacleCubes(Grid3D grid, Transform root)
@@ -96,7 +82,7 @@ public class PhysicsPathfindingDemo : MonoBehaviour
             obstacle.transform.SetParent(parent);
             obstacle.transform.position = grid.GetCellWorldPosition(cell) + Vector3.up * 0.15f;
             obstacle.transform.localScale = new Vector3(0.88f, 1.3f, 0.88f);
-            obstacle.GetComponent<Renderer>().material.color = new Color(0.8f, 0.16f, 0.13f);
+            SetColor(obstacle.GetComponent<Renderer>(), new Color(0.8f, 0.16f, 0.13f));
         }
     }
 
@@ -135,6 +121,14 @@ public class PhysicsPathfindingDemo : MonoBehaviour
         Rigidbody rigidbody = ball.AddComponent<Rigidbody>();
         rigidbody.mass = 0.6f;
         ball.AddComponent<BlueBallAI>();
-        ball.GetComponent<Renderer>().material.color = new Color(0.08f, 0.42f, 1f);
+        SetColor(ball.GetComponent<Renderer>(), new Color(0.08f, 0.42f, 1f));
+    }
+
+    private static void SetColor(Renderer renderer, Color color)
+    {
+        MaterialPropertyBlock properties = new MaterialPropertyBlock();
+        properties.SetColor("_BaseColor", color);
+        properties.SetColor("_Color", color);
+        renderer.SetPropertyBlock(properties);
     }
 }
