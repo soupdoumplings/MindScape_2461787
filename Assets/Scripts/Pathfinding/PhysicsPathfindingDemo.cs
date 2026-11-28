@@ -14,6 +14,9 @@ public class PhysicsPathfindingDemo : MonoBehaviour
     {
         grid = GetComponent<Grid3D>();
         grid.WalkabilityChanged += RefreshObstacles;
+        if (GetComponent<GridDebugView>() == null)
+            gameObject.AddComponent<GridDebugView>();
+
         BuildLevelObjects();
     }
 
