@@ -64,3 +64,4 @@
 - Use `GetNode(position)` to look up a cell and `GetNeighbours(position)` to inspect the cells sharing one of its six sides.
 - The current sample scenes are flat grids (`height = 1`), but the data structure supports multiple height levels.
 - Blocked cells are listed on `Grid3D` in the Inspector. Invalid or repeated entries are ignored, and `IsWalkable(position)` is the single check used by movement and pathfinding.
+- Aim at any non-start/non-target cell and press **P** to switch it between walkable and blocked. The A* route recalculates straight away. Press **R** to recalculate without changing a cell.
