@@ -36,6 +36,14 @@ public class Grid3D : MonoBehaviour
     public float CellSize => cellSize;
     public int CellCount => width * height * depth;
     public int BlockedCellCount => blockedLookup.Count;
+    public event System.Action<Vector3Int, bool> WalkabilityChanged;
+
+    /// <summary>Controls the development-only cell outlines and coordinate labels.</summary>
+    public void SetDevelopmentViewEnabled(bool enabled)
+    {
+        showGridGizmos = enabled;
+        showCoordinates = enabled;
+    }
 
     /// <summary>Updates a node at runtime and refreshes its simple demo visual.</summary>
     public void SetWalkable(Vector3Int position, bool walkable)
@@ -52,6 +60,7 @@ public class Grid3D : MonoBehaviour
 
         blockedCells = new List<Vector3Int>(blockedLookup).ToArray();
         CreateGridVisuals();
+        WalkabilityChanged?.Invoke(position, walkable);
     }
 
     public GridNode GetNode(Vector3Int position)
