@@ -13,10 +13,18 @@ public sealed class GameMenu : MonoBehaviour
     private Text sensitivityValue;
     private Text frameRateValue;
     private GameObject settingsPanel;
+    private GameSettings settings;
 
     private void Awake()
     {
         CreateEventSystem();
+        settings = GetComponent<GameSettings>();
+        if (settings == null)
+            settings = gameObject.AddComponent<GameSettings>();
+    }
+
+    private void Start()
+    {
         CreateCanvas();
     }
 
@@ -73,9 +81,9 @@ public sealed class GameMenu : MonoBehaviour
         rect.anchoredPosition = new Vector2(390f, -32f);
         rect.sizeDelta = new Vector2(400f, 310f);
         settingsText = CreateLabel("Settings", panel.transform, new Vector2(22f, -20f), 26);
-        volumeValue = CreateSlider("Volume", panel.transform, new Vector2(22f, -78f), 0f, 1f, GameSettings.Instance.Volume, value => GameSettings.Instance.SetVolume(value));
-        sensitivityValue = CreateSlider("Look sensitivity", panel.transform, new Vector2(22f, -148f), 0.5f, 2f, GameSettings.Instance.Sensitivity, value => GameSettings.Instance.SetSensitivity(value));
-        frameRateValue = CreateSlider("FPS cap", panel.transform, new Vector2(22f, -218f), 0f, 2f, GameSettings.Instance.FrameRate == 30 ? 0f : GameSettings.Instance.FrameRate == 60 ? 1f : 2f, value => GameSettings.Instance.SetFrameRate(value < 0.5f ? 30 : value < 1.5f ? 60 : 120));
+        volumeValue = CreateSlider("Volume", panel.transform, new Vector2(22f, -78f), 0f, 1f, settings.Volume, settings.SetVolume);
+        sensitivityValue = CreateSlider("Look sensitivity", panel.transform, new Vector2(22f, -148f), 0.5f, 2f, settings.Sensitivity, settings.SetSensitivity);
+        frameRateValue = CreateSlider("FPS cap", panel.transform, new Vector2(22f, -218f), 0f, 2f, FrameRateToSliderValue(settings.FrameRate), value => settings.SetFrameRate(value < 0.5f ? 30 : value < 1.5f ? 60 : 120));
         RefreshSettings();
         panel.SetActive(false);
     }
@@ -88,14 +96,19 @@ public sealed class GameMenu : MonoBehaviour
 
     private void RefreshSettings()
     {
-        if (settingsText == null || GameSettings.Instance == null) return;
+        if (settingsText == null || settings == null) return;
         settingsText.text = "Settings";
         if (volumeValue != null)
-            volumeValue.text = $"{GameSettings.Instance.Volume:0%}";
+            volumeValue.text = $"{settings.Volume:0%}";
         if (sensitivityValue != null)
-            sensitivityValue.text = $"{GameSettings.Instance.Sensitivity:0.00}x";
+            sensitivityValue.text = $"{settings.Sensitivity:0.00}x";
         if (frameRateValue != null)
-            frameRateValue.text = $"{GameSettings.Instance.FrameRate} FPS";
+            frameRateValue.text = $"{settings.FrameRate} FPS";
+    }
+
+    private static float FrameRateToSliderValue(int frameRate)
+    {
+        return frameRate <= 30 ? 0f : frameRate <= 60 ? 1f : 2f;
     }
 
     private Text CreateSlider(string label, Transform parent, Vector2 position, float min, float max, float value, UnityEngine.Events.UnityAction<float> onChanged)

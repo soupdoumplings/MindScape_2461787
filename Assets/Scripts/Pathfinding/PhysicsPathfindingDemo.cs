@@ -6,10 +6,24 @@ public class PhysicsPathfindingDemo : MonoBehaviour
     [SerializeField] private GameObject firstPersonPlayerPrefab;
 
     private const string LevelObjectsName = "Level Objects";
+    private const string ObstaclesName = "Physical Obstacles";
+
+    private Grid3D grid;
 
     private void Start()
     {
+        grid = GetComponent<Grid3D>();
+        grid.WalkabilityChanged += RefreshObstacles;
+        if (GetComponent<GridDebugView>() == null)
+            gameObject.AddComponent<GridDebugView>();
+
         BuildLevelObjects();
+    }
+
+    private void OnDestroy()
+    {
+        if (grid != null)
+            grid.WalkabilityChanged -= RefreshObstacles;
     }
 
     [ContextMenu("Rebuild Level Objects")]
@@ -32,7 +46,6 @@ public class PhysicsPathfindingDemo : MonoBehaviour
         if (transform.Find(LevelObjectsName) != null)
             return;
 
-        Grid3D grid = GetComponent<Grid3D>();
         if (grid == null || firstPersonPlayerPrefab == null)
             return;
 
@@ -66,7 +79,7 @@ public class PhysicsPathfindingDemo : MonoBehaviour
 
     private void CreateObstacleCubes(Grid3D grid, Transform root)
     {
-        Transform parent = new GameObject("Physical Obstacles").transform;
+        Transform parent = new GameObject(ObstaclesName).transform;
         parent.SetParent(root);
         Vector3Int size = grid.GridSize;
 
@@ -84,6 +97,19 @@ public class PhysicsPathfindingDemo : MonoBehaviour
             obstacle.transform.localScale = new Vector3(0.88f, 1.3f, 0.88f);
             SetColor(obstacle.GetComponent<Renderer>(), new Color(0.8f, 0.16f, 0.13f));
         }
+    }
+
+    private void RefreshObstacles(Vector3Int changedCell, bool isWalkable)
+    {
+        Transform levelRoot = transform.Find(LevelObjectsName);
+        if (levelRoot == null)
+            return;
+
+        Transform oldObstacles = levelRoot.Find(ObstaclesName);
+        if (oldObstacles != null)
+            Destroy(oldObstacles.gameObject);
+
+        CreateObstacleCubes(grid, levelRoot);
     }
 
     private void CreatePlayer(Grid3D grid, Transform root)
