@@ -23,14 +23,33 @@ public class AStarPathfinder : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             FindPath();
 
-        // Placeholder for the matrix-puzzle event: mutate a node, then replan immediately.
         if (Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+            ToggleAimedCell();
+    }
+
+    private void ToggleAimedCell()
+    {
+        Camera camera = Camera.main;
+        if (camera == null || !Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hit, 100f))
         {
-            Vector3Int puzzleControlledCell = new Vector3Int(2, 0, 3);
-            GridNode node = grid.GetNode(puzzleControlledCell);
-            grid.SetWalkable(puzzleControlledCell, !node.IsWalkable);
-            FindPath();
+            Debug.LogWarning("Aim at a grid cell before pressing P.");
+            return;
         }
+
+        Vector3Int cell = grid.WorldToCell(hit.point);
+        if (cell == startCell || cell == targetCell)
+        {
+            Debug.LogWarning("The start and target cells cannot be changed.");
+            return;
+        }
+
+        GridNode node = grid.GetNode(cell);
+        if (node == null)
+            return;
+
+        grid.SetWalkable(cell, !node.IsWalkable);
+        Debug.Log($"Cell {cell} is now {(node.IsWalkable ? "walkable" : "blocked")}. Recalculating path.");
+        FindPath();
     }
 
     public void FindPath()
@@ -60,7 +79,7 @@ public class AStarPathfinder : MonoBehaviour
             if (current == targetNode)
             {
                 BuildPath(startNode, targetNode);
-                Debug.Log($"A* path found: {path.Count} nodes. Press P to change the puzzle-controlled node, or R to recalculate.");
+                Debug.Log($"A* path found: {path.Count} nodes. Aim at a cell and press P to change it, or R to recalculate.");
                 return;
             }
 
@@ -69,7 +88,7 @@ public class AStarPathfinder : MonoBehaviour
 
             foreach (GridNode neighbour in GetNeighbours(current))
             {
-                if (!neighbour.IsWalkable || closedSet.Contains(neighbour))
+                if (!grid.IsWalkable(neighbour.GridPosition) || closedSet.Contains(neighbour))
                     continue;
 
                 int tentativeCost = current.GCost + GetDistance(current, neighbour);

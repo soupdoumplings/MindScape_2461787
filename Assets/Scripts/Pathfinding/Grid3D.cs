@@ -20,6 +20,7 @@ public class Grid3D : MonoBehaviour
     [SerializeField] private bool showCoordinates = true;
 
     private GridNode[,,] grid;
+    private readonly HashSet<Vector3Int> blockedLookup = new HashSet<Vector3Int>();
 
     private void Awake()
     {
@@ -34,6 +35,15 @@ public class Grid3D : MonoBehaviour
     public Vector3Int GridSize => new Vector3Int(width, height, depth);
     public float CellSize => cellSize;
     public int CellCount => width * height * depth;
+    public int BlockedCellCount => blockedLookup.Count;
+    public event System.Action<Vector3Int, bool> WalkabilityChanged;
+
+    /// <summary>Controls the development-only cell outlines and coordinate labels.</summary>
+    public void SetDevelopmentViewEnabled(bool enabled)
+    {
+        showGridGizmos = enabled;
+        showCoordinates = enabled;
+    }
 
     /// <summary>Updates a node at runtime and refreshes its simple demo visual.</summary>
     public void SetWalkable(Vector3Int position, bool walkable)
@@ -43,17 +53,14 @@ public class Grid3D : MonoBehaviour
             return;
 
         node.IsWalkable = walkable;
-        List<Vector3Int> cells = blockedCells == null
-            ? new List<Vector3Int>()
-            : new List<Vector3Int>(blockedCells);
-
         if (walkable)
-            cells.Remove(position);
-        else if (!cells.Contains(position))
-            cells.Add(position);
+            blockedLookup.Remove(position);
+        else
+            blockedLookup.Add(position);
 
-        blockedCells = cells.ToArray();
+        blockedCells = new List<Vector3Int>(blockedLookup).ToArray();
         CreateGridVisuals();
+        WalkabilityChanged?.Invoke(position, walkable);
     }
 
     public GridNode GetNode(Vector3Int position)
@@ -90,6 +97,13 @@ public class Grid3D : MonoBehaviour
         return IsBlocked(position);
     }
 
+    /// <summary>Returns true only for a valid cell that is not marked as blocked.</summary>
+    public bool IsWalkable(Vector3Int position)
+    {
+        GridNode node = GetNode(position);
+        return node != null && node.IsWalkable;
+    }
+
     public Vector3 GetCellWorldPosition(Vector3Int position)
     {
         return transform.position + new Vector3(
@@ -116,6 +130,7 @@ public class Grid3D : MonoBehaviour
 
     public void CreateGrid()
     {
+        RebuildBlockedLookup();
         grid = new GridNode[width, height, depth];
 
         for (int x = 0; x < width; x++)
@@ -142,21 +157,34 @@ public class Grid3D : MonoBehaviour
             }
         }
 
-        Debug.Log("Grid created successfully!");
+        Debug.Log($"Grid created: {CellCount} cells, {BlockedCellCount} blocked.");
     }
 
     private bool IsBlocked(Vector3Int position)
     {
+        return blockedLookup.Contains(position);
+    }
+
+    private void OnValidate()
+    {
+        width = Mathf.Max(1, width);
+        height = Mathf.Max(1, height);
+        depth = Mathf.Max(1, depth);
+        cellSize = Mathf.Max(0.01f, cellSize);
+        RebuildBlockedLookup();
+    }
+
+    private void RebuildBlockedLookup()
+    {
+        blockedLookup.Clear();
         if (blockedCells == null)
-            return false;
+            return;
 
-        foreach (Vector3Int blocked in blockedCells)
+        foreach (Vector3Int cell in blockedCells)
         {
-            if (blocked == position)
-                return true;
+            if (cell.x >= 0 && cell.x < width && cell.y >= 0 && cell.y < height && cell.z >= 0 && cell.z < depth)
+                blockedLookup.Add(cell);
         }
-
-        return false;
     }
 
     private void CreateGridVisuals()
